@@ -81,6 +81,9 @@ export default async function SavingEntriesPage() {
           <a className="sidebar-link" href="#activity">
             Activity Feed
           </a>
+          <Link className="sidebar-link" href="/profile">
+            Profile
+          </Link>
         </nav>
 
         <div className="sidebar-stack">

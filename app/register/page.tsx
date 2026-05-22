@@ -7,9 +7,9 @@ export default function RegisterPage() {
         <p className="eyebrow">Authentication</p>
         <h1 className="editor-title">Create your account</h1>
         <p className="editor-copy">
-          Register with email and password. Once signed in, you will only see
-          your own saving entries and be able to create, update, and delete
-          them.
+          Register with your personal details and account credentials. Once
+          signed in, you will only see your own saving entries and be able to
+          create, update, and delete them.
         </p>
 
         <AuthForm mode="register" />
