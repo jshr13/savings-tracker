@@ -25,6 +25,16 @@ export async function POST(request: Request) {
   const { data, error } = await supabase.auth.signUp({
     email: body.email,
     password: body.password,
+    options: {
+      data: {
+        first_name: body.first_name,
+        last_name: body.last_name,
+        age: Number(body.age),
+        email: body.email,
+        phone_number: body.phone_number,
+        address: body.address,
+      },
+    },
   })
 
   if (error) {
@@ -32,24 +42,6 @@ export async function POST(request: Request) {
       { message: 'Failed to register.', details: error.message },
       { status: 400 }
     )
-  }
-
-  if (data.user && data.session) {
-    const { error: profileError } = await supabase.rpc('create_profile_for_current_user', {
-      p_first_name: body.first_name,
-      p_last_name: body.last_name,
-      p_age: Number(body.age),
-      p_email: body.email,
-      p_phone_number: body.phone_number,
-      p_address: body.address,
-    })
-
-    if (profileError) {
-      return NextResponse.json(
-        { message: 'User created but profile creation failed.', details: profileError.message },
-        { status: 500 }
-      )
-    }
   }
 
   return NextResponse.json({

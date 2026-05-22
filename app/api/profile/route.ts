@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 
-import type { ProfileFormValues, ProfileRow } from '@/lib/profiles'
+import {
+  getProfileFormValuesFromSources,
+  type ProfileFormValues,
+  type ProfileRow,
+} from '@/lib/profiles'
 import { createClient } from '@/utils/supabase/server'
 
 export async function GET() {
@@ -30,15 +34,20 @@ export async function GET() {
 
   if (!data) {
     return NextResponse.json(
-      {
-        message:
-          'No profile row exists yet for this user. Create the profile row in Supabase or sign up again after the profile SQL is in place.',
-      },
-      { status: 404 }
+      getProfileFormValuesFromSources({
+        fallbackEmail: user.email,
+        userMetadata: user.user_metadata,
+      })
     )
   }
 
-  return NextResponse.json(data)
+  return NextResponse.json(
+    getProfileFormValuesFromSources({
+      fallbackEmail: user.email,
+      profile: data,
+      userMetadata: user.user_metadata,
+    })
+  )
 }
 
 export async function PATCH(request: Request) {
@@ -86,7 +95,8 @@ export async function PATCH(request: Request) {
 
   const { error } = await supabase
     .from('profiles')
-    .update({
+    .upsert({
+      id: user.id,
       first_name: body.first_name,
       last_name: body.last_name,
       age: Number(body.age),
@@ -94,7 +104,8 @@ export async function PATCH(request: Request) {
       phone_number: body.phone_number,
       address: body.address,
     })
-    .eq('id', user.id)
+    .select('id')
+    .single()
 
   if (error) {
     return NextResponse.json(

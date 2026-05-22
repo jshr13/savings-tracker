@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { LogoutButton } from '@/components/auth/logout-button'
 import { ProfileForm } from '@/components/profile/profile-form'
 import { getRequestCookieHeader, getRequestOrigin } from '@/lib/server-api'
-import type { ProfileFormValues, ProfileRow } from '@/lib/profiles'
+import type { ProfileFormValues } from '@/lib/profiles'
 import { createClient } from '@/utils/supabase/server'
 
 export default async function ProfilePage() {
@@ -39,16 +39,7 @@ export default async function ProfilePage() {
     )
   }
 
-  const profile = (await response.json()) as ProfileRow
-
-  const initialValues: ProfileFormValues = {
-    first_name: profile.first_name,
-    last_name: profile.last_name,
-    age: String(profile.age),
-    email: profile.email,
-    phone_number: profile.phone_number,
-    address: profile.address,
-  }
+  const initialValues = (await response.json()) as ProfileFormValues
 
   return (
     <main className="dashboard-shell">

@@ -208,14 +208,13 @@ Flow:
 3. Form sends `POST /api/auth/register`
 4. API route calls `supabase.auth.signUp(...)`
 5. Supabase creates the auth user
-6. If a session is immediately available, the route tries to create the matching profile row
+6. Signup metadata is stored on the auth user
+7. A database trigger creates the matching profile row in `public.profiles`
 
 Important detail:
 
-- if Supabase email confirmation is enabled, a session may not exist immediately after signup
-- that means the profile row may not be created automatically at that moment
-
-This is one current limitation/known behavior.
+- the profile should be linked by `auth.users.id`, not by email
+- email is still stored in `profiles`, but the stable identity link is the UUID user id
 
 ### Login
 
@@ -461,12 +460,14 @@ Run these in Supabase `SQL Editor`:
 
 - `sql/create_profiles_table.sql`
 - `sql/create_profile_for_current_user.sql`
+- `sql/create_profile_on_auth_signup.sql`
 - `sql/rls_profiles.sql`
 
 Purpose:
 
 - create the profiles table
 - create the profile creation RPC
+- create the auth signup trigger that inserts the profile automatically
 - protect profiles with RLS
 
 ### 5. Run SQL For Saving Entries Ownership

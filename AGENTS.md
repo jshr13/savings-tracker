@@ -1,11 +1,6 @@
-I was thinking that the user when registering must have 
+I have installed MCP server for this project.
 
-Name
-Last Name
-Age
-Email
-Phone Number
-Address
 
-So, I think that a user's table is needed?
+now read the notes.md
 
+currently I tried to view the profile page for this project but it does not display the profile information the user
