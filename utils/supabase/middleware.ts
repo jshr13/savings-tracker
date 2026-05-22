@@ -5,6 +5,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
 
 export const updateSession = async (request: NextRequest) => {
+  const { pathname } = request.nextUrl
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -28,7 +29,26 @@ export const updateSession = async (request: NextRequest) => {
     },
   })
 
-  await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const isAuthPage = pathname === '/login' || pathname === '/register'
+  const isProtectedPage =
+    pathname === '/saving-entries' || pathname.startsWith('/saving-entries/')
+  const isApiRoute = pathname.startsWith('/api/')
+
+  if (!isApiRoute && isAuthPage && user) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/saving-entries'
+    return NextResponse.redirect(url)
+  }
+
+  if (!isApiRoute && isProtectedPage && !user) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
 
   return response
 }
